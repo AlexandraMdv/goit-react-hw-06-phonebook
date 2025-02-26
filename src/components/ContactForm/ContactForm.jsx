@@ -1,26 +1,22 @@
 import styles from './ContactForm.module.css';
 import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact, getContacts } from '../../redux/contactsSlice';
+import Swal from 'sweetalert2';
 
-const ContactForm = ({onSubmit}) => {
-    // state = {
-    //     name: '',
-    //     number: '',
-    // }
+const ContactForm = () => {
+    const contacts = useSelector(getContacts);
+    const dispatch = useDispatch();
 
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
 
     const handleChange = (ev) => {
         const {name: inputName, value} = ev.target;
-        if(inputName === 'name') {
-            console.log(inputName);
-            
+        if(inputName === 'name') {            
             setName(value);
-        } else {
-            console.log(inputName);
-            
+        } else {           
             setNumber(value);
         }
         
@@ -29,7 +25,30 @@ const ContactForm = ({onSubmit}) => {
     const handleSubmit = (e) => {
         e.preventDefault();        
 
-        onSubmit({id: nanoid(), name: name, number: number});
+        if (contacts.some(({ name: contactName }) => contactName === name)) 
+        {        
+            Swal.fire({
+                title: `'${name}' is already in list`,
+                icon: 'error',
+                confirmButtonText: 'Try again'
+            })
+            return;
+        } else if (contacts.some(({number: contactNumber}) => contactNumber === number)) {
+            Swal.fire({
+                title: `'${number}' You already have this number in your contacts`,
+                icon: 'error',
+                confirmButtonText: 'Try again'
+            })
+            return;
+        }
+
+        dispatch(
+            addContact({
+                name,
+                number,
+                id: nanoid(),
+            })
+        );
         setName('');
         setNumber('');
     }
@@ -70,9 +89,5 @@ const ContactForm = ({onSubmit}) => {
         </form>
     )
 } 
-
-ContactForm.propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-};
 
 export default ContactForm;

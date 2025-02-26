@@ -10,12 +10,10 @@
     align-items: center;
     display: flex;
     gap: 16px;
-    margin-bottom: 8px;
-    padding: 4px;
 }
 
 .listItem:hover {
-    scale: 1.03;
+    scale: 1.01;
     background-color: #f5f5f5;
 }
 
